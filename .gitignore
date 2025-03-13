@@ -1,0 +1,89 @@
+# Игнорируем виртуальное окружение
+venv/
+.venv/
+
+# Игнорируем конфигурационные файлы IDE (PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Игнорируем кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Игнорируем зависимости, установленные в venv
+Lib/
+Scripts/
+bin/
+include/
+
+# Игнорируем файлы логов и отладочные файлы
+*.log
+*.out
+*.err
+logs/
+debug.log
+
+# Игнорируем системные файлы и временные файлы
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Игнорируем файлы с переменными окружения (секретные данные)
+.env
+*.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Игнорируем SQLite-базу данных и миграции (если используешь SQLite)
+*.sqlite3
+db.sqlite3
+migrations/
+
+# Игнорируем файлы зависимостей
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Игнорируем Jupyter Notebook checkpoints (если используешь Jupyter)
+.ipynb_checkpoints/
+
+# Игнорируем файлы кэширования пакетов (pip, poetry)
+__pypackages__/
+pip-wheel-metadata/
+poetry.lock
+
+# Игнорируем файлы тестов и покрытие кода
+.tox/
+.nox/
+.coverage
+*.cover
+coverage.xml
+nosetests.xml
+test-reports/
+pytest_cache/
+
+# Игнорируем файлы сборки
+dist/
+build/
+*.egg-info/
+MANIFEST
+
+# Игнорируем файлы CI/CD
+.github/workflows/
+.gitlab-ci.yml
+
+# Игнорируем файлы Docker (если используешь)
+*.dockerignore
+docker-compose.override.yml
+
+# Игнорируем файлы Terraform (если используешь инфраструктуру как код)
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+
+# Игнорируем файлы SSH-ключей и конфиденциальных данных
+*.pem
+*.key
