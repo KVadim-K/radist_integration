@@ -1,7 +1,6 @@
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from dotenv import load_dotenv
-import requests
 import logging
 
 # Настройка логирования
@@ -11,9 +10,14 @@ logger = logging.getLogger(__name__)
 # Загрузка переменных из .env файла
 load_dotenv()
 
-API_KEY = os.getenv('RADIST_API_KEY')
-COMPANY_ID = os.getenv('COMPANY_ID')
-INTEGRATION_ID = os.getenv('INTEGRATION_ID')
+API_KEY = os.getenv("RADIST_API_KEY")
+COMPANY_ID = os.getenv("COMPANY_ID")
+CONNECTION_ID = os.getenv("CONNECTION_ID")
+NGROK_URL = os.getenv("NGROK_URL")
+
+if not API_KEY or not COMPANY_ID or not CONNECTION_ID or not NGROK_URL:
+    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, CONNECTION_ID и NGROK_URL")
+
 
 headers = {
     "X-Api-Key": API_KEY,
@@ -22,42 +26,30 @@ headers = {
 
 app = FastAPI()
 
-
 # Проверка подключения
 @app.get("/")
 def root():
     return {"status": "Работает!"}
 
 
+
 # Обработка вебхука Radist
 @app.post("/webhook")
-async def webhook_radist(request: Request):
-    data = await request.json()
-    logging.info(f"Получен webhook: {data}")
+async def webhook_handler(request: Request):
+    """
+    Обработка входящих вебхуков от Radist.Online.
+    Рекомендуется: быстро сохранить событие в очередь, вернуть 200,
+    а основную обработку выполнить асинхронно.
+    """
+    try:
+        data = await request.json()
+    except Exception as e:
+        logger.error(f"Ошибка чтения JSON: {e}")
+        raise HTTPException(status_code=400, detail="Неверный формат JSON")
 
-    event = data.get('event')
-    chat_id = data['data']['chat']['id']
-    connection_id = data['data']['connection']['id']
-    message_text = data['data']['message']['text']['body']
+    logger.info(f"Получен webhook: {data}")
 
-    logging.info(f"Новое сообщение в чат {chat_id}: {message_text}")
-
-    # Ответ клиенту
-    reply_text = f"Вы написали: {message_text}"
-
-    url = f"https://api.radist.online/v2/companies/{COMPANY_ID}/messaging/chats/{chat_id}/messages"
-
-    payload = {
-        "connection_id": connection_id,
-        "type": "text",
-        "text": {"body": reply_text}
-    }
-
-    response = requests.post(url, headers=headers, json=payload)
-
-    if response.status_code == 200:
-        logging.info("Сообщение отправлено клиенту.")
-    else:
-        logging.error(f"Ошибка отправки сообщения: {response.text}")
+    # Здесь можно добавить логику обработки входящих событий
+    # Например, проверить event_type, сохранить данные в БД, отправить уведомление и т.д.
 
     return {"status": "OK"}

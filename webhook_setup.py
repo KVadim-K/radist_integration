@@ -5,31 +5,36 @@ from dotenv import load_dotenv
 # Загрузка переменных окружения
 load_dotenv()
 
-API_KEY = os.getenv("RADIST_API_KEY")
+RADIST_API_KEY = os.getenv("RADIST_API_KEY")
 COMPANY_ID = os.getenv("COMPANY_ID")
-INTEGRATION_ID = os.getenv("INTEGRATION_ID")
+CONNECTION_ID = os.getenv("CONNECTION_ID")
+NGROK_URL = os.getenv("NGROK_URL")
 
-if not API_KEY or not COMPANY_ID or not INTEGRATION_ID:
-    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, INTEGRATION_ID")
+if not RADIST_API_KEY or not COMPANY_ID or not CONNECTION_ID or not NGROK_URL:
+    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, CONNECTION_ID и NGROK_URL")
 
 headers = {
-    "X-Api-Key": API_KEY,
+    "X-Api-Key": RADIST_API_KEY,
     "Content-Type": "application/json"
 }
 
-# Публичный URL от ngrok – УБЕДИТЬСЯ, ЧТО ОН АКТУАЛЬНЫй !!!!!
-PUBLIC_WEBHOOK_URL = "https://0691-104-223-102-25.ngrok-free.app/webhook"
+# Формирование URL для регистрации вебхука
+url = f"https://api.radist.online/v2/companies/{COMPANY_ID}/webhooks/"
 
-# Формирование payload – в данном варианте не передаем integration_id в теле, так как он уже в URL
+# Тело запроса должно содержать обязательные поля:
+# - connection_id: ID подключения (канала), для которого вы подписываетесь
+# - url: публичный URL для получения уведомлений (должен включать путь /webhook)
+# - events: массив типов событий, на которые вы подписываетесь
 payload = {
-    "type": "message",      # можно заменить на другой тип, если нужно (например, "conversation")
-    "url": PUBLIC_WEBHOOK_URL,
-    "description": "Webhook для тестовой интеграции"
+    "connection_id": int(CONNECTION_ID),
+    "url": f"{NGROK_URL}/webhook",
+    "events": [
+        "messages.create",
+        "messages.delivery.delivered",
+        "messages.delivery.read",
+        "messages.delivery.error"
+    ]
 }
-
-# Новый URL с указанием идентификатора интеграции
-url = f"https://api.radist.online/v2/companies/{COMPANY_ID}/integrations/{INTEGRATION_ID}/webhooks"
-
 response = requests.post(url, headers=headers, json=payload)
 
 print("Статус-код:", response.status_code)
