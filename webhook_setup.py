@@ -1,6 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from pyngrok import ngrok
 
 # Загрузка переменных окружения
 load_dotenv()
@@ -8,18 +9,25 @@ load_dotenv()
 RADIST_API_KEY = os.getenv("RADIST_API_KEY")
 COMPANY_ID = os.getenv("COMPANY_ID")
 CONNECTION_ID = os.getenv("CONNECTION_ID")
-NGROK_URL = os.getenv("NGROK_URL")
+NGROK_URL = os.getenv("NGROK_URL")  # Если переменная не задана, NGROK_URL будет None
 
-if not RADIST_API_KEY or not COMPANY_ID or not CONNECTION_ID or not NGROK_URL:
-    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, CONNECTION_ID и NGROK_URL")
+if not RADIST_API_KEY or not COMPANY_ID or not CONNECTION_ID:
+    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID и CONNECTION_ID")
+
+# Если NGROK_URL не задан, запускаем туннель через pyngrok
+if not NGROK_URL:
+    tunnel = ngrok.connect(8000)
+    NGROK_URL = tunnel.public_url
+    print("Ngrok tunnel URL:", NGROK_URL)
 
 headers = {
     "X-Api-Key": RADIST_API_KEY,
     "Content-Type": "application/json"
 }
 
-# Формирование URL для регистрации вебхука
+# Используем URL с завершающим слэшем, как в Swagger
 url = f"https://api.radist.online/v2/companies/{COMPANY_ID}/webhooks/"
+
 
 # Тело запроса должно содержать обязательные поля:
 # - connection_id: ID подключения (канала), для которого вы подписываетесь
@@ -35,6 +43,7 @@ payload = {
         "messages.delivery.error"
     ]
 }
+
 response = requests.post(url, headers=headers, json=payload)
 
 print("Статус-код:", response.status_code)

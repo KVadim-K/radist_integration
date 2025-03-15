@@ -13,10 +13,10 @@ load_dotenv()
 API_KEY = os.getenv("RADIST_API_KEY")
 COMPANY_ID = os.getenv("COMPANY_ID")
 CONNECTION_ID = os.getenv("CONNECTION_ID")
-NGROK_URL = os.getenv("NGROK_URL")
 
-if not API_KEY or not COMPANY_ID or not CONNECTION_ID or not NGROK_URL:
-    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, CONNECTION_ID и NGROK_URL")
+
+if not API_KEY or not COMPANY_ID or not CONNECTION_ID:
+    raise ValueError("Проверьте, что в .env заданы RADIST_API_KEY, COMPANY_ID, CONNECTION_ID")
 
 
 headers = {
@@ -30,8 +30,6 @@ app = FastAPI()
 @app.get("/")
 def root():
     return {"status": "Работает!"}
-
-
 
 # Обработка вебхука Radist
 @app.post("/webhook")
