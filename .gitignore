@@ -87,3 +87,11 @@ terraform.tfstate.backup
 # Игнорируем файлы SSH-ключей и конфиденциальных данных
 *.pem
 *.key
+/ngrok.exe
+
+# Игнорируем файлы заканчивающиеся на ~
+*~
+
+# Игнорируем old or backup exe
+*.exe.old
+*.exe
