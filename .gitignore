@@ -95,3 +95,4 @@ terraform.tfstate.backup
 # Игнорируем old or backup exe
 *.exe.old
 *.exe
+*.json
