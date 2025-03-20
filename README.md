@@ -86,3 +86,8 @@
       }
     }
    ```
+   **•** Выполните команду (укажите полный путь к файлу, если он не находится в текущей директории):
+
+```bash
+   curl.exe --ssl-no-revoke -X POST "https://api.radist.online/v2/companies/200509/messaging/messages/" -H "Content-Type: application/json" -H "X-Api-Key: <YOUR_API_KEY>" --data-binary "@C:\ПОЛНЫЙ\ПУТЬ\К\payload.json"
+```
